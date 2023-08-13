@@ -14,10 +14,14 @@ app.register_blueprint(get_question_bp)
 
 load_dotenv()
 
-port = os.environ.get("PORTA")
+port = os.environ.get("PORT")
+host = os.environ.get("HOST")
 
 if port is None:
     port = 5000
+if host is None:
+    host = "127.0.0.1"
+
 
 if __name__ == '__main__':
-    app.run(debug=True,port=port)
+    app.run(debug=True,port=port, host=host)
