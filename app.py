@@ -1,12 +1,17 @@
-# from sre_constants import RANGE_UNI_IGNORE
-from dotenv import load_dotenv
+import os
 from flask import Flask
+from flask_cors import CORS
+from dotenv import load_dotenv
+
 from quiz_app.routes import get_answer_bp
 from quiz_app.routes import add_question_bp
 from quiz_app.routes import get_question_bp
-import os
 
 app = Flask(__name__)
+
+allowed_origins = ["http://localhost:3000"]
+
+CORS(app, origins=allowed_origins)
 
 app.register_blueprint(get_answer_bp)
 app.register_blueprint(add_question_bp)
