@@ -12,4 +12,5 @@ if mongo_db_uri is None:
 client = MongoClient(mongo_db_uri)
 db = client['quiz']
 question_collection = db['questions']
+session_collection = db['session']
 
