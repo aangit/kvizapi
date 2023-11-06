@@ -3,10 +3,7 @@ from flask import Flask
 from flask_cors import CORS
 from dotenv import load_dotenv
 
-from quiz_app.routes import get_answer_bp
-from quiz_app.routes import add_question_bp
-from quiz_app.routes import get_question_bp
-from quiz_app.routes import start_session_bp
+from quiz_app.routes import get_answer_bp, add_question_bp, get_question_bp, start_session_bp, compare_answer_bp
 
 app = Flask(__name__)
 
@@ -18,6 +15,7 @@ app.register_blueprint(get_answer_bp)
 app.register_blueprint(add_question_bp)
 app.register_blueprint(get_question_bp)
 app.register_blueprint(start_session_bp)
+app.register_blueprint(compare_answer_bp)
 
 load_dotenv()
 
