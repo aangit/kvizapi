@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, request
 from datetime import datetime
 from quiz_app.repo import SessionRepo, QuestionRepo
-from quiz_app.utils.date import is_timestamp_older_than_30_minutes
+from quiz_app.utils.date import is_timestamp_older_than_1_minute
 from quiz_app.utils.list import contains_object_with
 
 compare_answer_bp = Blueprint('compare_answer_bp', __name__)
@@ -21,6 +21,12 @@ def compare_answer(question_id):
 
     if session is None:
         return jsonify({ "error": "session not valid" }), 400
+    
+    if 'latest_question' in session:
+        latest_question = session['latest_question']
+
+        if latest_question is not None and is_timestamp_older_than_1_minute(latest_question['created_at']):
+            return "", 410
 
     question = QuestionRepo.find_by_id(question_id)
 
@@ -36,7 +42,7 @@ def compare_answer(question_id):
 
     answered_questions.append({
         'question_id': question_id,
-        'at': datetime.now().isoformat(),
+        'at': datetime.utcnow().isoformat(),
         'is_correct': is_correct
     })
 

@@ -1,21 +1,22 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 
 def is_timestamp_older_than_30_minutes(iso_timestamp):
-    try:
-        # Parse the ISO timestamp into a datetime object
-        timestamp_datetime = datetime.fromisoformat(iso_timestamp)
+    return is_timestamp_older_than_x_minutes(iso_timestamp, 30)
 
-        # Get the current time
-        current_time = datetime.utcnow()
+def is_timestamp_older_than_1_minute(iso_timestamp):
+    return is_timestamp_older_than_x_minutes(iso_timestamp, 1)
 
-        # Calculate the time difference
-        time_difference = current_time - timestamp_datetime
+def is_timestamp_older_than_x_minutes(iso_timestamp, x):
+    iso_datetime = datetime.fromisoformat(iso_timestamp)
+    
+    iso_datetime_milliseconds = int(iso_datetime.timestamp() * 1000)
 
-        # Check if the time difference is greater than or equal to 30 minutes
-        if time_difference >= timedelta(minutes=30):
-            return True
-        else:
-            return False
-    except ValueError:
-        # Handle invalid timestamp format
-        return False
+    minutesInMilliseconds = x * 60 * 1000
+
+    current_time = datetime.utcnow()
+
+    current_time_milliseconds = int(current_time.timestamp() * 1000)
+    
+    print (iso_datetime_milliseconds, minutesInMilliseconds, current_time_milliseconds)
+
+    return iso_datetime_milliseconds + minutesInMilliseconds < current_time_milliseconds

@@ -1,3 +1,4 @@
+from datetime import datetime
 from quiz_app.utils import session_collection
 from quiz_app.utils.date import is_timestamp_older_than_30_minutes
 
@@ -28,7 +29,24 @@ class SessionRepo:
         if answered_questions is None:
             return
 
-        session_collection.update_one({ "session_id": id }, { '$set': { 'answered_questions': answered_questions } })
+        session_collection.update_one(
+            {
+                "session_id": id
+            },
+            {
+                '$set': {
+                    'answered_questions': answered_questions,
+                    'latest_question': None
+                }
+            }
+        )
+    
+    @staticmethod
+    def set_latest_question(id, question_id):
+        session_collection.update_one({ "session_id": id }, { '$set': { 'latest_question': {
+            "question_id": question_id,
+            "created_at": datetime.utcnow().isoformat()
+        } } })
 
     @staticmethod
     def count_score(answered_questions):

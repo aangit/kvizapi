@@ -9,3 +9,21 @@ class QuestionRepo:
             return None
 
         return question_collection.find_one({ "_id": ObjectId(id) })
+    
+    def find_one_not_in_list(list):
+        pipeline = [
+            {
+                '$match': {
+                    '_id': {
+                        '$nin': list
+                    }
+                }
+            },
+            {
+                '$sample': {
+                    'size': 1
+                }
+            }
+        ]
+
+        return question_collection.aggregate(pipeline).next()
