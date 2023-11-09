@@ -1,6 +1,7 @@
 from pyvalidator import is_mongo_id
 from bson import ObjectId
 from quiz_app.utils import question_collection
+from datetime import datetime
 
 class QuestionRepo:
 
@@ -27,3 +28,6 @@ class QuestionRepo:
         ]
 
         return question_collection.aggregate(pipeline).next()
+
+    def rate(question_id, like):
+        question_collection.update_one({ "_id": ObjectId(question_id) }, { '$push': { 'rates': { "like": like, "created_at": datetime.utcnow().isoformat() } } })
