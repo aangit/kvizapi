@@ -19,7 +19,7 @@ class SessionRepo:
         if created_at is None:
             return None
 
-        if is_timestamp_older_than_30_minutes(created_at):
+        if is_timestamp_older_than_30_minutes(created_at) and 'finished' in session and session['finished']:
             return None
         
         return session
@@ -47,6 +47,10 @@ class SessionRepo:
             "question_id": question_id,
             "created_at": datetime.utcnow().isoformat()
         } } })
+
+    @staticmethod
+    def finish_session(id):
+        session_collection.update_one({ "session_id": id }, { '$set': { 'finished': True } })
 
     @staticmethod
     def count_score(answered_questions):
