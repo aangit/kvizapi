@@ -12,8 +12,8 @@ def start_session():
 
     payload = {
         'session_id': session_id,
-        'created_at': datetime.now().isoformat(),
-        'is_active': True
+        'created_at': datetime.utcnow().isoformat(),
+        'finished': False
     }
 
     session_collection.insert_one(payload)
