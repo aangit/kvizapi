@@ -17,7 +17,7 @@ app = Flask(__name__)
 
 allowed_origins = ["http://localhost:3000"]
 
-CORS(app, origins=allowed_origins)
+CORS(app, origins=allowed_origins, expose_headers=['X-Session-Id'])
 
 app.register_blueprint(get_answer_bp)
 app.register_blueprint(add_question_bp)
