@@ -50,8 +50,4 @@ def compare_answer(question_id):
 
     score = SessionRepo.count_score(answered_questions)
 
-    if score < 0:
-        
-        return jsonify({ "done": True })
-
     return jsonify({ "is_correct": is_correct, "score": score })
