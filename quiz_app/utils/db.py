@@ -13,4 +13,5 @@ client = MongoClient(mongo_db_uri)
 db = client['quiz']
 question_collection = db['questions']
 session_collection = db['session']
+user_collection = db['user']
 
