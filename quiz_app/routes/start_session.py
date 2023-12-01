@@ -1,24 +1,37 @@
 import uuid
-from flask import Blueprint, make_response
+from flask import Blueprint, jsonify, make_response, request
 from datetime import datetime
+from flask_jwt_extended import jwt_required
+from quiz_app.repo.session import SessionRepo
 from quiz_app.utils import session_collection
 
 start_session_bp = Blueprint('start_session_bp', __name__)
 
 @start_session_bp.route('/session', methods=['GET'])
+@jwt_required()
 def start_session():
+    duration = request.args.get('duration')
+    jwt_content = getattr(request, 'jwt_content')
 
-    session_id = str(uuid.uuid4())
+    user_id = jwt_content['sub']
 
-    payload = {
-        'session_id': session_id,
-        'created_at': datetime.utcnow().isoformat(),
-        'finished': False
-    }
+    if user_id is None:
+        return jsonify({'message': 'Invalid user'}), 400
 
-    session_collection.insert_one(payload)
+    active_session = SessionRepo.find_active_by_user_id(user_id)
+
+    if active_session is not None:
+            response = make_response('')
+            response.headers['X-Session-Id'] = active_session['session_id']
+
+            return response, 201
+
+    session = SessionRepo.create_session(user_id, duration)
 
     response = make_response('')
-    response.headers['X-Session-Id'] = session_id
+    response.headers['X-Session-Id'] = session['session_id']
 
-    return response, 201
+    return jsonify({
+         "created_at": session['created_at'],
+         "expires_at": session['expires_at'],
+    }), 201

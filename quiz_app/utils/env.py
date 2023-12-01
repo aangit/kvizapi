@@ -8,6 +8,8 @@ class EnvVar():
 
         if client_id is None:
             raise ValueError ("GOOGLE_CLIENT_ID is required")
+        
+        return client_id
 
     @staticmethod
     def google_client_secret():
@@ -15,3 +17,5 @@ class EnvVar():
 
         if client_secret is None:
             raise ValueError ("GOOGLE_CLIENT_SECRET is required")
+        
+        return client_secret

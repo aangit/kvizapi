@@ -2,6 +2,8 @@ import os
 from flask import Flask
 from flask_cors import CORS
 from dotenv import load_dotenv
+from flask_jwt_extended import JWTManager, jwt_required
+from quiz_app.utils import jwt_secret, process_token
 
 from quiz_app.routes import (
     get_answer_bp,
@@ -15,9 +17,16 @@ from quiz_app.routes import (
 
 app = Flask(__name__)
 
+app.config['JWT_SECRET_KEY'] = jwt_secret
+jwt = JWTManager(app)
+
 allowed_origins = ["http://localhost:3000"]
 
 CORS(app, origins=allowed_origins, expose_headers=['X-Session-Id'])
+
+@app.before_request
+def intercept_requests():
+    process_token()
 
 app.register_blueprint(get_answer_bp)
 app.register_blueprint(add_question_bp)
