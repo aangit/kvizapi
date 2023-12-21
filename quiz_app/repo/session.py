@@ -1,8 +1,29 @@
+import uuid
 from datetime import datetime
 from quiz_app.utils import session_collection
-from quiz_app.utils.date import is_timestamp_older_than_30_minutes
+from quiz_app.utils.date import has_expired, is_timestamp_older_than_30_minutes, increment_iso_timestamp
 
 class SessionRepo:
+
+    @staticmethod
+    def create_session(user_id, minutes = 5):
+        if minutes is None:
+            minutes = 5
+
+        session_id = str(uuid.uuid4())
+
+        now = datetime.utcnow().isoformat()
+
+        payload = {
+            'session_id': session_id,
+            'user_id': user_id,
+            'created_at': now,
+            'expires_at': increment_iso_timestamp(now, minutes),
+            'finished': False
+        }
+        session_collection.insert_one(payload)
+
+        return payload
 
     @staticmethod
     def find_by_id(id):
@@ -14,12 +35,28 @@ class SessionRepo:
         if session is None:
             return None
 
-        created_at = session['created_at']
+        expires_at = session['expires_at']
 
-        if created_at is None:
+        if expires_at is None:
             return None
 
-        if is_timestamp_older_than_30_minutes(created_at) and 'finished' in session and session['finished']:
+        if has_expired(expires_at) or 'finished' in session and session['finished']:
+            return None
+        
+        return session
+    
+    def find_active_by_user_id(id):
+        session = session_collection.find_one({ "user_id": id }, sort=[('expires_at', -1)] )
+
+        if session is None:
+            return None
+
+        expires_at = session['expires_at']
+
+        if expires_at is None:
+            return None
+
+        if has_expired(expires_at) or 'finished' in session and session['finished']:
             return None
         
         return session
